@@ -1,9 +1,14 @@
-import { ChangeEvent, useEffect, useState } from 'react';
-import { Card, CardContent, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
-import { Layout } from '@/components/layouts';
+import { ChangeEvent, FC, useEffect, useState } from 'react';
+import { GetServerSideProps } from 'next';
 import Cookies from 'js-cookie';
+import { Button, Card, CardContent, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
+import { Layout } from '@/components/layouts';
 
-const ThemeChangerPage = () => {
+interface Props {
+  theme: string;
+}
+
+const ThemeChangerPage:FC<Props> = ({ theme }) => {
 
   const [currentTheme, setCurrentTheme] = useState('light');
 
@@ -14,7 +19,7 @@ const ThemeChangerPage = () => {
   }
 
   useEffect(() => {
-    
+    setCurrentTheme(theme)
   }, [])
   
 
@@ -37,6 +42,19 @@ const ThemeChangerPage = () => {
       </Card>
     </Layout>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+  
+  const validThemes = ['light', 'dark', 'custom'];
+  const { theme = 'light', name = 'no-name' } = req.cookies;
+
+  return {
+    props: {
+      theme: validThemes.includes(theme) ? theme : 'dark',
+      name
+    }
+  }
 }
 
 export default ThemeChangerPage;
